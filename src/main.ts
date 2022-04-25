@@ -15,16 +15,18 @@ window.onload = async function () {
   const font = await fontLoader.loadAsync(`/fonts/droid_sans_mono_regular.typeface.json`);
 
   // テキストメッシュ
-  const textGeometry = new TextGeometry(`TextGeometry Scene`, {
-    font: font,
-    size: 10,
-    height: 1,
-  });
-  textGeometry.translate(-100, 10, 0);
-  textGeometry.scale(0.01, 0.01, 0.01);
-  const textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({ color: `#ccc` }));
-  // textMesh.position.set(-100, 10, 0);
-  // textMesh.scale.set(0.01, 0.01, 0.01);
+  const textMesh = new THREE.Mesh(
+    new TextGeometry(`TextGeometry Scene`, {
+      font: font,
+      size: 10,
+      height: 1,
+    }),
+    new THREE.MeshBasicMaterial({
+      color: `#ccc`,
+    })
+  );
+  textMesh.position.set(-0.75, 0, 0);
+  textMesh.scale.set(0.01, 0.01, 0.01);
 
   // 座表軸
   const axes = new THREE.AxesHelper();
@@ -45,8 +47,8 @@ window.onload = async function () {
   camera.lookAt(scene.position);
 
   // レンダラーの初期化
-  const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: appElement });
-  renderer.setClearColor(0xffffff, 1.0);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setClearColor(0xffffff, 1.0); // 背景色
   renderer.setSize(appElement.offsetWidth, appElement.offsetHeight);
   renderer.shadowMap.enabled = true; // レンダラー：シャドウを有効にする
 
@@ -66,4 +68,22 @@ window.onload = async function () {
     // 描画する
     renderer.render(scene, camera);
   });
+
+  /// 
+  /// ブラウザーDOM操作
+  /// 
+
+  // DOMに追加
+  appElement.appendChild(renderer.domElement);
+
+  // DOMイベントの登録: Windowサイズ変更イベントハンドラ
+  window.addEventListener(`resize`, () => {
+    const width = appElement.offsetWidth;
+    const height = appElement.offsetHeight;
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(width, height);
+  }, false);
 }
